@@ -1,0 +1,3 @@
+<tr border='1'><td width='6%' align='center'>"+d[id]+"</td><td width='6%' align='center'>"+d['name']+"</td><td width='21%' align='center'>{% if role.userlist %}{{ role.userlist }}{% endif %}</td>
+<td width='53%' align='center'><img src="{% static "icons/add.png" %}" id='assign' name='assign' height='20' width='20'>&nbsp;&nbsp;&nbsp;<img
+src="{% static "icons/del.png" %}" id='remove' name='remove' height='20' width='20'></td></td></tr>

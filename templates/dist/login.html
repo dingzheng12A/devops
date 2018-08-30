@@ -1,0 +1,85 @@
+{% extends "dist/base.html" %}
+{% load staticfiles %}
+{% block title %}
+  <title>运维自动化</title>
+{% endblock %}
+{% block content %}
+  <body class="app flex-row align-items-center">
+  <div class="container">
+    <div class="row justify-content-center" stye="height:60px;">
+      <div class="col-md-5">
+        <div class="card-group">
+          <div class="card p-4">
+            <form class="card-body" enctype="multipart/form-data" action="{% url 'login' %}" method="post">
+              {% csrf_token %}
+              <h1>运维自动化系统</h1>
+              <p class="text-muted">请输入你的账号密码</p>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="icon-user"></i>
+                    </span>
+                </div>
+
+
+                <input class="form-control" id="username" name="username" type="text" placeholder="用户名">
+              </div>
+              <div class="input-group mb-4">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="icon-lock"></i>
+                    </span>
+                </div>
+                <input class="form-control" id="password" name="password" type="password" placeholder="密码">
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <button class="btn btn-primary px-4" id='login' type="button">登录</button>
+                </div>
+                <div class="col-6 text-right">
+                  <button class="btn btn-link px-0" type="button">忘记密码?</button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+  </div>
+  <script type="text/javascript">
+      $(document).keydown(function (event) {
+          if (event.keyCode == 13) {
+              var csrftoken = $.cookie('csrftoken');
+              var $username = $("#username").val();
+              var $password = $("#password").val();
+              if ($username.length > 0 && $password.length > 0) {
+                  $.ajax({
+                      type: 'post',
+                      url: '/login/',
+                      data: {'username': $username, 'password': $password},
+                      //headers:{'X-CSRFToken':csrftoken},
+                      headers: {'X-CSRFToken': csrftoken},
+                      cache: false,
+                      dataType: 'json',
+                      success: function (data) {
+                          if (data.result == 1) {
+                              alert("密码验证成功.");
+                              window.location.href = '/main';
+                          } else {
+                              alert("密码验证失败.");
+                          }
+
+                      },
+                      failure: function (data) {
+                          alert("密码验证失败!")
+                      }
+                  })
+
+              }
+          }
+      });
+  </script>
+  </body>
+{% endblock %}
