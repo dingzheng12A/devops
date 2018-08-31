@@ -27,6 +27,7 @@ $(document).ready(function () {
 
         $("#roleAddModal #add").click(function () {
             var rolename = $("#roleAddModal #rolename").val();
+            var csrftoken = $.cookie('csrftoken');
             if (rolename.length == 0) {
                 alert("角色和描述信息都不能为空!");
                 $("#roleAddModal #add").attr("disabled", true);
@@ -38,12 +39,13 @@ $(document).ready(function () {
                 url: '/addrole',
                 data: {'rolename': rolename},
                 cache: false,
+                headers: {'X-CSRFToken': csrftoken},
                 dataType: 'json',
                 success: function (data) {
                     if (data['result'] == 1) {
-                        alert("添加juese成功！");
+                        alert("添加角色成功！");
                         //$("#roleAddModal").modal('hide');
-                        window.location.href = "/roleinfo?page_role=1";
+                        window.location.href = "/addRole?page_role=1";
 
                     } else {
                         alert("用户已经存在！");
@@ -88,10 +90,12 @@ $(document).ready(function () {
     });
 
     $("table[id='rolelist']").on("click", "tr #delrole_commit", function () {
+        var csrftoken = $.cookie('csrftoken');
         var container_users = $(this).parent().parent().children("td:eq(2)").text();
+        console.log("container_users:"+container_users+"length:"+container_users.length);
         var $position = $(this).parent().parent();
         var roleId = $(this).parent().siblings().find("#role_id").val();
-        if (container_users.length > 0) {
+        if (container_users.replace(/\s*/g,"").length>0) {
             alert("角色中包含用户，不能删除!");
         }
         else {
@@ -101,13 +105,15 @@ $(document).ready(function () {
             if (request == true) {
                 $.ajax({
                     type: 'post',
-                    url: '/delrole',
+                    url: '/dropRole',
                     data: {'rolelist': roleId},
                     cache: false,
+                    headers: {'X-CSRFToken': csrftoken},
                     dataType: 'json',
                     success: function (data) {
                         $position.hide();
                         alert("角色已经删除!");
+                        window.location.href="/dropRole?page_role=1";
 
                     }
 
@@ -145,13 +151,9 @@ $(document).ready(function () {
             var select_user = $("#userAssignRoleModal").find("#userSelect").val();
 
             if (container_users.indexOf(select_user) < 0) {
-                //container_users += select_user;
-                //container_users += ' ';
                 $("#userAssignRoleModal #container_user").append("<span class='tag' data-value='"+select_user+"'>"+select_user+"<a class=\"tag-remove\">x</a></span>");
             }
 
-            //$("#userAssignRoleModal").find("#container_user").val(container_users);
-            //$("#Layer_assign").hide(current_user);
         });
 
 

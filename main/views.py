@@ -55,10 +55,6 @@ def logout(request):
         auth.logout(request)
         return HttpResponse(json.dumps({'result': 1}), content_type='application/json')
 
-
-
-
-
 @login_required
 @csrf_protect
 def add_user(request):
@@ -171,8 +167,7 @@ def mainpage(request):
         cpu_load_15.append(res[7])
     del results
 
-    # mainmenu='Dashboard'
-    # submenu=''
+
 
 
 
@@ -187,6 +182,7 @@ def mainpage(request):
 @csrf_protect
 def adduser(request):
     username = None
+    page_range=None
     request.session.set_expiry(0)
     # print("session:" % dir(request.session))
     print("session:%s" % request.session.keys())
@@ -202,16 +198,16 @@ def adduser(request):
 
 
     if username is not None:
-        userlist = User.objects.filter(~Q(username='admin'), username__contains=username)
+        userlist = User.objects.filter(~Q(username='admin'), username__contains=username).order_by(id)
     elif 'search_username' in request.GET:
         search_username=request.GET.get('search_username')
-        userlist=User.objects.filter(~Q(username='admin'), username__contains=search_username)
+        userlist=User.objects.filter(~Q(username='admin'), username__contains=search_username).order_by(id)
     else:
         userlist = User.objects.exclude(username='admin')
     print("userlist:%s" % userlist)
-    pagintor = Paginator(userlist, 3)
+    paginator = Paginator(userlist, 3)
     if 'page' in request.GET:
-        page = request.GET.get('page')
+        page = int(request.GET.get('page'))
         display = 'block'
     else:
         page = 1
@@ -221,15 +217,25 @@ def adduser(request):
 
     print("display:%s page:%s" % (display, page))
     try:
-        users = pagintor.page(page)
+        users = paginator.page(page)
     except PageNotAnInteger:
-        users = pagintor.page(1)
+        users = paginator.page(1)
     except EmptyPage:
-        users = paginator.page(pagintor.num_pages)
+        users = paginator.page(paginator.num_pages)
+
+
+#对于超过10页的按顺序依次显示
+    if paginator.num_pages > 10:
+        if page > 6:
+             page_range=range(page-5,page+5)
+        else:
+            page_range=range(1,11)
+    else:
+        page_range=range(1,paginator.num_pages)
 
     return render(request, 'dist/users.html',
-                  dict(username=request.session['username'].title(), userlist=users, form=form, displayAdduser=display,
-                       page_user=page,mainmenu=u'用户管理',submenu=u'添加用户',search_username=request.session.get('search'),menulist=menulist,submenulist=submenulist))
+                  dict(username=request.session['username'].title(), userlist=users, userform=form, displayAdduser=display,
+                       page_user=page,mainmenu=u'用户管理',submenu=u'添加用户',search_username=request.session.get('search'),menulist=menulist,submenulist=submenulist,page_range=page_range))
 
 
 @login_required
@@ -247,10 +253,10 @@ def add_role(request):
 
 
     if rolename is not None:
-        rolelist = Group.objects.filter(name__contains=rolename)
+        rolelist = Group.objects.filter(name__contains=rolename).order_by(id)
     else:
         rolelist = Group.objects.order_by('id')
-    pagintor_role = Paginator(rolelist, 3)
+    paginator_role = Paginator(rolelist, 3)
     if 'page_role' in request.GET:
         page_role = request.GET.get('page_role')
         display_role = 'block'
@@ -259,16 +265,19 @@ def add_role(request):
         display_role = 'block'
 
     try:
-        roles = pagintor_role.page(page_role)
+        roles = paginator_role.page(page_role)
     except PageNotAnInteger:
-        roles = pagintor_role.page(1)
+        roles = paginator_role.page(1)
     except EmptyPage:
-        roles = pagintor_role.page(pagintor_role.num_pages)
+        roles = paginator_role.page(paginator_role.num_pages)
+
+    userlist = User.objects.filter(~Q(username='admin')).order_by(id)
+    print("userlist:%s" % userlist)
 
     print("display_role:%s" % display_role)
     return render(request, 'dist/roles.html',
                   dict(username=request.session['username'].title(), rolelist=roles, displayAddrole=display_role,
-                       age_role=page_role, mainmenu=u'角色管理', submenu=u'添加角色', form=form,menulist=menulist,submenulist=submenulist))
+                       page_role=page_role, mainmenu=u'角色管理', submenu=u'添加角色', roleform=form,menulist=menulist,submenulist=submenulist,page_number=range(1,paginator_role.num_pages),allusers=userlist))
 
 
 @login_required
@@ -282,7 +291,7 @@ def dropuser(request):
     else:
         form = UserSearch()
     if username is not None:
-        userlist = User.objects.filter(~Q(username='admin'), username__contains=username)
+        userlist = User.objects.filter(~Q(username='admin'), username__contains=username).order_by(id)
     else:
         userlist = User.objects.exclude(username='admin')
     pagintor = Paginator(userlist, 3)
@@ -315,6 +324,7 @@ def deluser(request):
             for userid in userlist.split(','):
                 user = User.objects.get(id=userid)
                 user.delete()
+                print("aaaa ")
             # 1:success
             result = {'result': 1}
         except Exception as e:
@@ -379,7 +389,7 @@ def dropRole(request):
         form = RoleSearch()
 
     if rolename is not None:
-        rolelist = Group.objects.filter(name__contains=rolename)
+        rolelist = Group.objects.filter(name__contains=rolename).order_by(id)
     else:
         rolelist = Group.objects.all().order_by('id')
     pagintor = Paginator(rolelist, 3)

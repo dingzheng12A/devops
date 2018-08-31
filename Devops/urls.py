@@ -32,13 +32,14 @@ urlpatterns = [
     url(r'^addUser/', main_views.adduser,name='adduser'),
     url(r'^dropUser', main_views.dropuser,name='dropuser'),
     url(r'^addRole',main_views.add_role),
+    url(r'^dropRole', main_views.dropRole),
     url(r'^userinfo/', main_views.userinfo),
     url(r'^adduser', main_views.add_user),
     url(r'^resetpass', main_views.resetpass),
 
     url(r'^deluser', main_views.deluser),
     url(r'^addrole', main_views.addrole),
-    url(r'^dropRole', main_views.dropRole),
+
     url(r'^rolelist', main_views.roleinfo),
     url(r'^assign',main_views.assign),
     url(r'^removeassign', main_views.removeassign),

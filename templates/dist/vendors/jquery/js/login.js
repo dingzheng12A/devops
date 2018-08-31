@@ -255,22 +255,26 @@ $(document).ready(function () {
         var $siblings = $(this).siblings('tr');
         $siblings.removeClass("selected").find('button[id="del_single"]').prop('disabled', true);
         $(this).addClass('selected').find('button[id="del_single"]').prop('disabled', false);
+        var csrftoken = $.cookie('csrftoken');
     })
     $("table[id='userlist']").on("click", "tr #del_single", function () {
+        var csrftoken = $.cookie('csrftoken');
         var request = confirm("是否删除用户?");
         var $position = $(this).parent().parent();
         var userId = $(this).parent().siblings().find("#id").val();
+        console.log("xxxxxxxxxxx");
         if (request == true) {
             $.ajax({
                 type: 'post',
                 url: '/deluser',
                 data: {'userlist': userId},
                 cache: false,
+                headers: {'X-CSRFToken': csrftoken},
                 dataType: 'json',
                 success: function (data) {
                     //$position.hide();
                     alert("用户已经删除!");
-                    window.location.href = "/deleteuser?page=1";
+                    window.location.href = "/dropUser?page=1";
 
                 }
 
@@ -301,6 +305,7 @@ $(document).ready(function () {
         }
     })
     $("#deluser #del_btn").click(function () {
+        var csrftoken = $.cookie('csrftoken');
         console.log(userarray);
         console.log('点击次数:' + num);
         var request = confirm("是否删除用户?");
@@ -310,18 +315,11 @@ $(document).ready(function () {
                 url: '/deluser',
                 data: {'userlist': userarray.join(",").replace(/^,/, '')},
                 cache: false,
+                headers: {'X-CSRFToken': csrftoken},
                 dataType: 'json',
                 success: function (data) {
-                    //	$position.hide();
-                    alert("用户已经删除!");
-                    $("table[id='userlist'] tr").each(function () {
-                        var $id = $(this).children("td:eq(0)");
-                        if ($id.is(":checked")) {
-                            $id.parent().parent().hide();
-                        }
+                    window.location.href="/dropUser?page=1";
 
-
-                    })
 
                 }
 
