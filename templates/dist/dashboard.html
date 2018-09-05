@@ -300,6 +300,7 @@
                 {% csrf_token %}
                 {{ userform }}
                 <button type="submit" class="btn btn-info">搜索</button>
+                <a href="{% url 'download' %}">下载模板</a>
               </form>
             </div>
             <table class="table table-striped table-bordered table-hover table-condensed" id='userarea' border='1'
@@ -563,9 +564,11 @@
                                 <div class="row">
                                   <li class="nav-item icon-film"></li>
                                   <p class="text-info col-sm-3">{{ submenu.name }}</p>
-                                  <button id="edit_submenu" class="btn btn-primary btn-github">Edit</button>
-                                  <button id="del_submenu" class="btn btn-danger  offset-sm-1 pull-right">Delete
+
+                                  <button id="edit_submenu" class="btn btn-primary btn-github">修改</button>
+                                  <button id="del_submenu" class="btn btn-danger  offset-sm-1 pull-right">删除
                                   </button>
+                                  <input type="hidden" name="menu_url" class="pull-right" value="{{ submenu.url }}">
                                 </div>
                                 <hr>
                               {% endif %}
@@ -920,6 +923,29 @@
         <button type="submit" class="btn btn-success" data-dismiss="modal">确认</button>
         <butthon type="button"   class="btn btn-default" data-dismiss="modal">取消</butthon>
       </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="editmenuModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h4>修改菜单信息:</h4>
+        </div>
+        <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body pull-left">
+        <form action="/menumanager/editmenu" method="post">
+          {% csrf_token %}
+          {{ editmenuform }}
+          <button type="submit" class="btn btn-github pull-right`">修改</button>
+        </form>
+      </div>
+
     </div>
   </div>
 </div>

@@ -23,6 +23,7 @@ from User.forms import UserSearch
 from Role.forms import RoleSearch
 from menu.forms import  MenuForm
 from menu.menuQuery import  menulist,submenulist
+from django.http import StreamingHttpResponse
 
 regexp = re.compile('\s+')
 
@@ -198,7 +199,7 @@ def adduser(request):
 
 
     if username is not None:
-        userlist = User.objects.filter(~Q(username='admin'), username__contains=username).order_by(id)
+        userlist = User.objects.filter(~Q(username='admin'), username__contains=username)
     elif 'search_username' in request.GET:
         search_username=request.GET.get('search_username')
         userlist=User.objects.filter(~Q(username='admin'), username__contains=search_username).order_by(id)
@@ -271,7 +272,7 @@ def add_role(request):
     except EmptyPage:
         roles = paginator_role.page(paginator_role.num_pages)
 
-    userlist = User.objects.filter(~Q(username='admin')).order_by(id)
+    userlist = User.objects.filter(~Q(username='admin'))
     print("userlist:%s" % userlist)
 
     print("display_role:%s" % display_role)
@@ -389,7 +390,7 @@ def dropRole(request):
         form = RoleSearch()
 
     if rolename is not None:
-        rolelist = Group.objects.filter(name__contains=rolename).order_by(id)
+        rolelist = Group.objects.filter(name__contains=rolename)
     else:
         rolelist = Group.objects.all().order_by('id')
     pagintor = Paginator(rolelist, 3)
@@ -481,3 +482,21 @@ def addmenu(request):
         form=MenuForm()
 
     return render(request, 'dist/menu.html', dict(displayMenu='block', mainmenu=u'菜单管理', submenu=u'添加菜单',form=form,menulist=menulist,submenulist=submenulist))
+
+
+def readfile(filename,chunksize=1024):
+    with open(filename) as f:
+        while True:
+            c=f.read(chunksize)
+            if c:
+                yield c
+            else:
+                break
+
+def download(request):
+    filename=request.GET.get('filename')
+    response=StreamingHttpResponse(readfile(filename))
+    response['Content-Type']='application/octet-stream'
+    response['Content-Disposition']='attachement;filename={}'.format(filename.split('/')[-1])
+    print("StreamingHttpResponse:%s" % dir(response))
+    return response

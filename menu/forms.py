@@ -18,4 +18,9 @@ class SubmenuForm(forms.Form):
     url=forms.CharField(label=u'超级链接',max_length=200,required=True,widget=forms.TextInput(attrs={'class':'form-control col-md-6 form-control-lg','placeholder':'定义超级链接'}))
 
 
+class EditmenuForm(forms.Form):
+    menuname = forms.CharField(label=u'菜单名称',max_length=50,required=True,widget=forms.TextInput(attrs={'class':'form-control col-md-6 form-control-lg','placeholder':'定义菜单名称'}))
+    url = forms.CharField(label=u'超级链接',max_length=200,required=True,widget=forms.TextInput(attrs={'class':'form-control col-md-6 form-control-lg','placeholder':'定义超级链接'}))
+
+
 
