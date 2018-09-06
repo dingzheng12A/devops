@@ -61,7 +61,7 @@ ROOT_URLCONF = 'Devops.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/Deploy/Devops/templates'],
+        'DIRS': [os.path.join(os.path.dirname(os.path.dirname(__file__)),'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -152,5 +152,5 @@ LOGIN_URL = '/login/'
 #SESSION_COOKIE_AGE=60*30	#设置cookie 失效时间为30分钟
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_ENGINE = "django.contrib.sessions.backends.file"
-SESSION_FILE_PATH = "/var/lib/session"
+#SESSION_FILE_PATH = "/var/lib/session"
 SESSION_COOKIE_AGE = 7200
