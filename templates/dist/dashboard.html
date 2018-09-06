@@ -555,7 +555,7 @@
                             class="nav-icon icon-folder-alt pull-left"></i><input type="hidden" value="{{ menu.id }}">
                           <p col-md-3 class="text-primary">{{ menu.name }}</p>
                           <button id="add_submenu" class="btn btn-primary col-sm-2 offset-sm-6" value="添加子菜单">添加子菜单
-                          </button><bitton id="del_menu" class="btn btn-secondary offset-sm-1 pull-right  value="删除主菜单">删除主菜单</bitton>
+                          </button><button id="del_menu" class="btn btn-secondary offset-sm-1 pull-right  value="删除主菜单">删除主菜单</button>
                         </div>
                         <ul class="nav-dropdown-items card-body">
                           {% if submenulist %}
@@ -583,8 +583,9 @@
                 {% endif %}
               </div>
             </div>
-            <div class="alert alert-danger" role="alert">
-              A simple danger alert—check it out!
+            <div id="menuwarning" class="alert alert-warning  fade clo"  role="alert">
+              <a href="#" class="close" data-dismiss="alert" aria-label="Close">&times;</a>
+              <strong>警告:</strong>主菜单包含有子菜单，不能删除!.
             </div>
 
 
