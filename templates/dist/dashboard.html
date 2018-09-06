@@ -554,8 +554,8 @@
                         <div class="row card-header"><i
                             class="nav-icon icon-folder-alt pull-left"></i><input type="hidden" value="{{ menu.id }}">
                           <p col-md-3 class="text-primary">{{ menu.name }}</p>
-                          <button id="add_submenu" class="btn btn-primary col-sm-2 offset-sm-8" value="添加子菜单">添加子菜单
-                          </button>
+                          <button id="add_submenu" class="btn btn-primary col-sm-2 offset-sm-6" value="添加子菜单">添加子菜单
+                          </button><bitton id="del_menu" class="btn btn-secondary offset-sm-1 pull-right  value="删除主菜单">删除主菜单</bitton>
                         </div>
                         <ul class="nav-dropdown-items card-body">
                           {% if submenulist %}
@@ -569,6 +569,7 @@
                                   <button id="del_submenu" class="btn btn-danger  offset-sm-1 pull-right">删除
                                   </button>
                                   <input type="hidden" name="menu_url" class="pull-right" value="{{ submenu.url }}">
+                                  <input type="hidden" name="menu_id" class="pull-right" value="{{ submenu.id }}">
                                 </div>
                                 <hr>
                               {% endif %}
@@ -938,13 +939,15 @@
         </button>
       </div>
 
-      <div class="modal-body pull-left">
-        <form action="/menumanager/editmenu" method="post">
+      <div class="modal-body pull-right">
+        <form action="/menumanager/editmenu/" method="post">
           {% csrf_token %}
           {{ editmenuform }}
-          <button type="submit" class="btn btn-github pull-right`">修改</button>
+          <input type="hidden" name="menu_id" id="menu_id" value="">
+          <button type="submit" class="btn btn-github pull-right">修改</button>
         </form>
       </div>
+      <div class="modal-footer"></div>
 
     </div>
   </div>

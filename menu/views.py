@@ -3,6 +3,7 @@ from django.views.decorators.csrf import  csrf_protect,csrf_exempt
 from django.contrib.auth.decorators import  login_required
 from django.db.models import Q
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import Group,Permission
 from django.contrib.contenttypes.models import  ContentType
 from Monitor.models import Monitor
@@ -110,7 +111,7 @@ def addsubmenu(request):
     menulist=Menu.objects.filter(parent_id=0)
     submenulist=Menu.objects.filter(~Q(parent_id=0))
 
-    return render(request, 'dist/menu.html', dict(displayMenu='block', mainmenu=u'菜单管理', submenu=u'添加菜单',menulist=menulist,submenulist=submenulist,form=form,submenuform=submenuform,editmenuform="aaaaa"))
+    return render(request, 'dist/menu.html', dict(displayMenu='block', mainmenu=u'菜单管理', submenu=u'添加菜单',menulist=menulist,submenulist=submenulist,form=form,submenuform=submenuform,editmenuform=editmenuform))
 
 @login_required
 @csrf_protect
@@ -126,6 +127,23 @@ def delmenu(request):
 
     else:
         return HttpResponse('')
+
+
+def editmenu(request):
+    if request.method == 'POST':
+        try:
+            menu_id=request.POST.get('menu_id')
+            menuname=request.POST.get('menuname')
+            url=request.POST.get('url')
+            menu=Menu.objects.get(id=menu_id)
+            menu.name=menuname
+            menu.url=url
+            menu.save()
+            return HttpResponseRedirect('/menumanager/addmenu')
+        except Exception as e:
+            print("has an error:%s" % str(e))
+            return HttpResponse(json.dumps({'result':0}),content_type='application/json')
+
 
 
 
