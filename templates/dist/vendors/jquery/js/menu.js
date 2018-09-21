@@ -39,8 +39,9 @@ $(document).ready(function () {
 
             })
         } else {
-            alert("aaaaaaaaaa");
-            $("#menuwarning").alert();
+
+            //$("#menuwarning").alert();
+            alert("存在子菜单，不能删除!");
         }
 
 

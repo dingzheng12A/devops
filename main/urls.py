@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^rolelist', views.roleinfo),
     url(r'^assign', views.assign),
     url(r'^removeassign', views.removeassign),
+    #privilege manager
 
 
 ]

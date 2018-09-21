@@ -44,7 +44,8 @@ urlpatterns = [
     url(r'^assign',main_views.assign),
     url(r'^removeassign', main_views.removeassign),
     url(r'^menumanager/',include(menu.urls)),
-    url(r'^download/',main_views.download,name='download')
+    url(r'^download/',main_views.download,name='download'),
+    url(r'^addPrivilege',main_views.addprivileged),
 
 
 ]

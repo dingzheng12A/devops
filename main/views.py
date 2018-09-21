@@ -23,6 +23,7 @@ from User.forms import UserSearch
 from Role.forms import RoleSearch
 from menu.forms import  MenuForm
 from menu.menuQuery import  menulist,submenulist
+from privilege.models import  Privilege
 from django.http import StreamingHttpResponse
 
 regexp = re.compile('\s+')
@@ -56,8 +57,9 @@ def logout(request):
         auth.logout(request)
         return HttpResponse(json.dumps({'result': 1}), content_type='application/json')
 
-@login_required
-@csrf_protect
+#@login_required
+# @csrf_protect
+@csrf_exempt
 def add_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -70,7 +72,8 @@ def add_user(request):
             user.save()
             result = {'result': 1, 'message': 'success for adduser!'}
         except Exception as e:
-            print("has an error:%s", e)
+            print("aaaaaaaaaaazzzzzzzzzzzzzzzzzzzz")
+            print("has an error:%s", str(e))
             result = {'result': 0, 'message': 'failure for adduser!'}
 
         return HttpResponse(json.dumps(result), content_type='application/json')
@@ -274,11 +277,13 @@ def add_role(request):
 
     userlist = User.objects.filter(~Q(username='admin'))
     print("userlist:%s" % userlist)
+    privilist=Privilege.objects.filter(pid=0)
+    subprivlist=Privilege.objects.filter(~Q(pid=0))
 
     print("display_role:%s" % display_role)
     return render(request, 'dist/roles.html',
                   dict(username=request.session['username'].title(), rolelist=roles, displayAddrole=display_role,
-                       page_role=page_role, mainmenu=u'角色管理', submenu=u'添加角色', roleform=form,menulist=menulist,submenulist=submenulist,page_number=range(1,paginator_role.num_pages),allusers=userlist))
+                       page_role=page_role, mainmenu=u'角色管理', submenu=u'添加角色', roleform=form,menulist=menulist,submenulist=submenulist,page_number=range(1,paginator_role.num_pages),allusers=userlist,privilist=privilist,subprivlist=subprivlist))
 
 
 @login_required
@@ -500,3 +505,7 @@ def download(request):
     response['Content-Disposition']='attachement;filename={}'.format(filename.split('/')[-1])
     print("StreamingHttpResponse:%s" % dir(response))
     return response
+
+
+def addprivileged(request):
+    return render(request,'dist/privilege.html',dict(menulist=menulist,submenulist=submenulist))

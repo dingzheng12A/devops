@@ -92,7 +92,6 @@ $(document).ready(function () {
     $("table[id='rolelist']").on("click", "tr #delrole_commit", function () {
         var csrftoken = $.cookie('csrftoken');
         var container_users = $(this).parent().parent().children("td:eq(2)").text();
-        console.log("container_users:"+container_users+"length:"+container_users.length);
         var $position = $(this).parent().parent();
         var roleId = $(this).parent().siblings().find("#role_id").val();
         if (container_users.replace(/\s*/g,"").length>0) {
@@ -186,7 +185,7 @@ $(document).ready(function () {
         });
     })
 
-//yichuguanlian
+//移除关联关系
     $("table[id='rolearea']").on("click", "tr #remove", function (e) {
         var $selected = $("table[id='rolearea'] tr[class='selected']");
         var index = $selected.index();
@@ -273,6 +272,13 @@ $(document).ready(function () {
             })
 
         }
+
+    })
+
+    $("table[id='rolearea']").on("click", "tr #alloc_privi", function (e) {
+        var $selected = $("table[id='rolearea'] tr[class='selected']");
+        $("#privilegeModal").modal({'show': true, backdrop: 'static', keyboard: false});
+
 
     })
 });
