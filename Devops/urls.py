@@ -18,34 +18,17 @@ from django.urls import path
 from django.conf.urls import url
 from django.conf.urls import include
 from main import views as main_views
-from Role import views as role_views
 import menu.urls
-#from django.conf import settings
-#from django.views.static import serve
-import os,sys
+from main import urls as main_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^login/', main_views.login,name='login'),
-    url(r'^logout/', main_views.logout),
+    url(r'^login/', main_views.login, name='login'),
+    url(r'^logout/', main_views.logout, name='logout'),
     url(r'^main/', main_views.mainpage),
-    url(r'^addUser/', main_views.adduser,name='adduser'),
-    url(r'^dropUser', main_views.dropuser,name='dropuser'),
-    url(r'^addRole',main_views.add_role),
-    url(r'^dropRole', main_views.dropRole),
-    url(r'^userinfo/', main_views.userinfo),
-    url(r'^adduser', main_views.add_user),
-    url(r'^resetpass', main_views.resetpass),
-
-    url(r'^deluser', main_views.deluser),
-    url(r'^addrole', main_views.addrole),
-
-    url(r'^rolelist', main_views.roleinfo),
-    url(r'^assign',main_views.assign),
-    url(r'^removeassign', main_views.removeassign),
-    url(r'^menumanager/',include(menu.urls)),
-    url(r'^download/',main_views.download,name='download'),
-    url(r'^addPrivilege',main_views.addprivileged),
-
-
+    url(r'^user/', include(main_urls)),
+    url(r'^menumanager/', include(menu.urls)),
+    url(r'^Account', include('Account.urls')),
+    url(r'^jenkins/', include('jenkins.urls')),
+    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 ]

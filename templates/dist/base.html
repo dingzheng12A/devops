@@ -35,13 +35,13 @@
 {% block script %}
   <script src="{% static "vendors/jquery/js/jquery.min.js" %}"></script>
   <script src="{% static "vendors/jquery/js/jquery.cookie-1.4.1.min.js" %}"></script>
-  <script type="text/javascript" charset="utf8"
+  <script type="text/javascript" charset="utf8"></script>
   <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
   <script src="{% static "vendors/jquery/js/login.js" %}"></script>
   <script src="{% static "vendors/jquery/js/dropuser.js" %}"></script>
   <script src="{% static "vendors/jquery/js/role.js" %}"></script>
 {#  <script src="{% static "vendors/jquery/js/chart.js" %}"></script>#}
-  <script src="{% static "vendors/jquery/js/sys_menu.js" %}"></script>
+{#  <script src="{% static "vendors/jquery/js/sys_menu.js" %}"></script>#}
   <script src="{% static "vendors/popper.js/js/popper.min.js" %}"></script>
   <script src="{% static "vendors/bootstrap/js/bootstrap.min.js" %}"></script>
   <script src="{% static "vendors/pace-progress/js/pace.min.js" %}"></script>
@@ -53,6 +53,8 @@
   <script src="{% static "js/main.js" %}"></script>
   <script src="{% static "js/bootstrap-treeview.min.js" %}"></script>
   <script src="{% static "vendors/jquery/js/menu.js" %}"></script>
+   {% block extend_script %}
+       {% endblock %}
 {% endblock %}
 {% block content %}
   <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">

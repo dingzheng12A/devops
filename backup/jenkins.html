@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.0.0
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+{% extends "dist/dashboard.html" %}
+{% block customer %}
+    <div class="container-fluid">
+        <div class="card-body">
+            <table class="table border-0">
+                <thead class="thead-dark font-weight-bold">
+                <tr>
+                    <td>工程名称</td>
+                    <td>构建次数</td>
+                    <td>成功次数</td>
+                    <td>失败次数</td>
+                    <td>取消次数</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for res in results %}
+                    <tr>
+                        <td><a href="{% url 'jenkins_chart' %}?jobname={{ res.jobname }}">{{ res.jobname }}</a></td>
+                        <td>{{ res.buildcounts|default:0 }}</td>
+                        <td>{{ res.successcounts|default:0 }}</td>
+                        <td>{{ res.failurecounts|default:0 }}</td>
+                        <td>{{ res.abortedcounts|default:0 }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+</html>

@@ -7,22 +7,21 @@
 from django.urls import path
 from django.conf.urls import url
 from main import views
+
 urlpatterns = [
-    url(r'^aaa/', views.login,name='login'),
     url(r'^logout/', views.logout),
-    url(r'^$', views.listuser),
-    url(r'^userinfo/', views.userinfo),
-    url(r'^adduser', views.adduser),
-    url(r'^resetpass', views.resetpass),
-    url(r'^deleteuser', views.dropuser),
-    url(r'^deluser', views.deluser),
-    url(r'^addrole', views.addrole),
-    url(r'roleinfo', views.listuser),
-    url(r'^delrole', views.delrole),
-    url(r'^rolelist', views.roleinfo),
-    url(r'^assign', views.assign),
-    url(r'^removeassign', views.removeassign),
-    #privilege manager
-
-
+    #用户管理
+    url(r'^modifyuser', views.modify_user, name='modify_user'),
+    url(r'^check_user', views.is_user_exists, name='check_user'),
+    url(r'^usermanager', views.user_manager, name='user_manager'),
+    url(r'^uploadimage', views.upload_image, name='upload_image'),
+    url(r'^delete_users', views.batch_delete_user, name='batch_delete_user'),
+    #组管理
+    # 添加组和删除组
+    url(r'^groupmanager', views.group_manager, name='group_manager'),
+    # 检查组是否已存在
+    url(r'^check_group', views.is_group_exists, name='check_group'),
+    # 将用户加入到角色
+    url(r'assigin',views.assign_to,name='assigin_user_to_role'),
+    url(r'query_users', views.query_users, name='query_users')
 ]

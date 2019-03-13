@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.0.0
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+{% extends "dist/dashboard.html" %}
+{% load staticfiles %}
+{% block customer %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header text-info">
+                <div class="row">
+                    <div class="h4 col-md-4">用户管理</div>
+                    <div class="offset-md-6">
+                        <button class="btn btn-primary" onclick="open_add_user_modal()"><span
+                                data-toggle="tooltip" title="添加用户">添加用户</span></button>
+                        &nbsp;&nbsp;<button data-toggle="tooltip" title="批量删除用户" id="batch_delete_user" class="btn btn-danger" disabled>批量删除</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-body">
+                    <div class="card">
+                        <table class="table table-bordered" id="user_list">
+                            <div class="card-title">
+                                <thead class="table-info">
+                                <tr>
+                                    <th></th>
+                                    <th scope="col" class="text-center">用户名</th>
+                                    <th scope="col" class="text-center">电子邮件</th>
+                                    <th scope="col" class="text-center">所属组</th>
+                                    <th scope="col" class="text-center">是否管理员</th>
+                                    <th scope="col" class="text-center">修改属性</th>
+                                </tr>
+                                </thead>
+                            </div>
+                            <div class="card-body">
+                                {% for user in current_user_list %}
+                                    <tr>
+                                        <td scope="col" class="text-center"><input type="checkbox"  id="user_id" class="checkbox"
+                                                                                   value="{{ user.id }}"/></td>
+                                        <td scope="col" class="text-center text-success h5">{{ user.username }}</td>
+                                        <td scope="col" class="text-center font-italic">{{ user.email }}</td>
+                                        <td scope="col" class="text-center">
+                                            <select multiple="multiple" size="10" class="select2 select2-container col-md-4 " style="height:75px;" data-actions-box="true" name="duallistbox_demo1[]">
+                                                <option>1</option>
+                                                <option>1</option>
+                                                <option>1</option>
+                                            </select>
+                                        </td>
+                                        <td scope="col" class="text-center">{{ user.is_superuser }}</td>
+                                        <td scope="col" class="text-center"><div class="form-group"><label class="label-primary" for="active_user">激活/禁用</label><input id="active_user" type="checkbox" class="form-control" value="禁用/激活"></div><div type="button"></div></td>
+                                    </tr>
+                                {% endfor %}
+                            </div>
+                        </table>
+                        <div class="card-footer">
+                            <div class="row pull-right  col-md-3">
+                                <label class="label" for="pagesize">每页显示:</label>
+                                <select id="pagesize" class="form-control col-md-3">
+                                    <option value="5" {% if page_size == 5 %}selected{% endif %}>5</option>
+                                    <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
+                                    <option value="15" {% if page_size == 15 %}selected{% endif %}>15</option>
+                                </select>行
+                                <nav aria-label="" class="pull-right">
+                                    <ul class="pagination">
+                                        {% if current_page > 1 %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="{% url 'user_manager' %}?page={{ current_page|add:-1 }}">前一页</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">前一页</span>
+                                            </li>
+                                        {% endif %}
+                                        {% for page in page_list %}
+                                            <li class="page-item {% if page == current_page %}active{% endif %}"><a
+                                                    class="page-link"
+                                                    href="{% url 'user_manager' %}?page={{ page }}">{{ page }}</a></li>
+                                        {% endfor %}
+
+                                        {% if current_page < pages %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="{% url 'user_manager' %}?page={{ current_page|add:1 }}">下一页</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">下一页</span>
+                                            </li>
+                                        {% endif %}
+
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="card-footer">分页</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fade modal" id="add_user" tabindex="-2" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form class="form" id="add_user" action="">
+                <div class="modal-content">
+                    <div class="modal-header h4 text-info">添加用户<span class="close pull-right" data-dismiss="modal"
+                                                                     aria-hidden="True">&times;</span></div>
+                    <div class="modal-body">
+                        {% for item in form %}
+                            {{ item.label_tag }}
+                            {{ item }}
+                            {{ item.errors }}
+                        {% endfor %}
+                        <span class="btn-ghost-info text-lg-center text-danger bg-facebook " id="error_msg"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" onclick="add_user()">添加</button>
+                        <button class="btn btn-primary" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="fade modal" id="del_confirm">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title h4  text-info">删除用户</div>
+                    <button class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body h5">是否要删除用户吗?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" onclick="batch_delete_user()">确定</button>
+                    <button class="btn btn-primary" type="button" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block customer_script %}
+    $("select[id='pagesize']").on("change",function(){
+        var csrftoken = $.cookie('csrftoken');
+        $.ajax({
+            url: "{% url 'user_manager' %}",
+            type: "post",
+            headers: {'X-CSRFToken': csrftoken},
+            data: {"pagesize":$(this).val()},
+            success:function(data){
+                location.href = "{% url 'user_manager' %}";
+            },
+        })
+    });
+    function open_add_user_modal(){
+        $("#add_user").modal({"backdrop": "static", "keyboard": false});
+    }
+    function add_user(){
+    var csrf_token = $.cookie('csrftoken');
+    $.ajax({
+    url:"{% url 'check_user' %}",
+    type:"post",
+    headers: {'X-CSRFToken': csrf_token},
+    data:$("form[id='add_user']").serialize(),
+    success:function(data){
+        if(data.result == 0){
+            $("form[id='add_user'] #error_msg").text(data.message);
+        }else{
+            $.ajax({
+                url: "{% url 'user_manager' %}",
+                type: "post",
+                headers: {'X-CSRFToken': csrf_token},
+                data:$("form[id='add_user']").serialize(),
+                success:function(){
+                    location.href="{% url 'user_manager' %}"
+                }
+            })
+        }
+    }
+    })
+    }
+    var num = 0;
+    var user_array = [];
+    $("table[id='user_list']").on("click", "tr #user_id", function () {
+        if ($(this).is(":checked")) {
+            num += 1;
+            user_array[num] = $(this).val();
+            console.log('点击次数:' + num + "user_array:" + user_array.join(" "));
+        } else {
+            user_array.pop($(this).val());
+            num -= 1;
+        }
+        if (num > 0) {
+            $("#batch_delete_user").prop('disabled', false);
+     } else {
+            $("#batch_delete_user").prop('disabled', true);
+        }
+    })
+    $("#batch_delete_user").on("click",function(){
+        $("#del_confirm").modal({"backdrop": "static", "keyboard": false});
+    })
+    function batch_delete_user(){
+        var csrf_token = $.cookie('csrftoken');
+        $.ajax({
+            url:"{% url 'batch_delete_user' %}",
+            data: {"user_list":user_array.toString()},
+            headers: {'X-CSRFToken': csrf_token},
+            type: "post",
+            dataType:"json",
+            success:function(data){
+                if(data.result==1){
+                    location.href = "{% url 'user_manager' %}";
+                }
+            }
+
+        })
+    }
+{% endblock %}
+</html>

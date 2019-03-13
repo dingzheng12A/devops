@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.0.0
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+<html lang="en">
+{% load staticfiles %}
+<head>
+  <base href="./">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
+  <meta name="author" content="Łukasz Holeczek">
+  <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
+  {% block title %}
+    <title>CoreUI Free Bootstrap Admin Template</title>
+  {% endblock %}
+  <!-- Icons-->
+  <link href='{% static "vendors/@coreui/icons/css/coreui-icons.min.css" %}' rel="stylesheet">
+  <link href="{% static "vendors/flag-icon-css/css/flag-icon.min.css" %}" rel="stylesheet">
+  <link href="{% static "vendors/font-awesome/css/font-awesome.min.css" %}" rel="stylesheet">
+  <link href="{% static "vendors/simple-line-icons/css/simple-line-icons.css" %}" rel="stylesheet">
+  <!-- Main styles for this application-->
+  <link href="{% static "css/style.css" %}" rel="stylesheet">
+  <link href="{% static "vendors/pace-progress/css/pace.min.css" %}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+  <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-treeview.min.css" %}">
+
+
+</head>
+{% block script %}
+  <script src="{% static "vendors/jquery/js/jquery.min.js" %}"></script>
+  <script src="{% static "vendors/jquery/js/jquery.cookie-1.4.1.min.js" %}"></script>
+  <script type="text/javascript" charset="utf8"
+  <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+  <script src="{% static "vendors/jquery/js/login.js" %}"></script>
+  <script src="{% static "vendors/jquery/js/dropuser.js" %}"></script>
+  <script src="{% static "vendors/jquery/js/role.js" %}"></script>
+{#  <script src="{% static "vendors/jquery/js/chart.js" %}"></script>#}
+{#  <script src="{% static "vendors/jquery/js/sys_menu.js" %}"></script>#}
+  <script src="{% static "vendors/popper.js/js/popper.min.js" %}"></script>
+  <script src="{% static "vendors/bootstrap/js/bootstrap.min.js" %}"></script>
+  <script src="{% static "vendors/pace-progress/js/pace.min.js" %}"></script>
+  <script src="{% static "vendors/perfect-scrollbar/js/perfect-scrollbar.min.js" %}"></script>
+  <script src="{% static "vendors/@coreui/coreui/js/coreui.min.js" %}"></script>
+  <!-- Plugins and scripts required by this view-->
+  <script src="{% static "vendors/chart.js/js/Chart.min.js" %}"></script>
+  <script src="{% static "vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js" %}"></script>
+  <script src="{% static "js/main.js" %}"></script>
+  <script src="{% static "js/bootstrap-treeview.min.js" %}"></script>
+  <script src="{% static "vendors/jquery/js/menu.js" %}"></script>
+   {% block extend_script %}
+       {% endblock %}
+{% endblock %}
+{% block content %}
+  <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+  <!-- CoreUI and necessary plugins-->
+  </body>
+{% endblock %}
+</html>

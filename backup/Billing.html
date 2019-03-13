@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.0.0
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+{% extends "dist/base.html" %}
+{% load staticfiles %}
+{% block title %}
+    <title>运维管理平台</title>
+    <style>
+        .tags-wrap {
+            border: 1px solid #ccc;
+            min-height: 24px;
+        }
+
+        .tags-wrap .tag {
+            display: inline-block;
+            line-height: 18px;
+            padding: 2px 20px 2px 5px;
+            background-color: #00aced;
+            color: #fff;
+            font-size: 12px;
+            margin: 3px;
+            position: relative;
+        }
+
+        .tags-wrap .tag .tag-remove {
+            position: absolute;
+            width: 10px;
+            right: 0px;
+            top: 0px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+    <header class="app-header navbar">
+        <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+            <img class="navbar-brand-full" src="{% static 'img/brand/logo.svg' %}" width="89" height="25"
+                 alt="CoreUI Logo">
+            <img class="navbar-brand-minimized" src="{% static "img/brand/sygnet.svg" %}" width="30" height="30"
+                 alt="CoreUI Logo">
+        </a>
+        <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="nav navbar-nav d-md-down-none">
+            <li class="nav-item px-3">
+                <a class="nav-link" href="/main">Dashboard</a>
+            </li>
+            <li class="nav-item px-3">
+                <a class="nav-link" href="#">Users</a>
+            </li>
+            <li class="nav-item px-3">
+                <a class="nav-link" href="#">Settings</a>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item d-md-down-none">
+                <a class="nav-link" href="#">
+                    <i class="icon-bell"></i>
+                    <span class="badge badge-pill badge-danger">5</span>
+                </a>
+            </li>
+            <li class="nav-item d-md-down-none">
+                <a class="nav-link" href="#">
+                    <i class="icon-list"></i>
+                </a>
+            </li>
+            <li class="nav-item d-md-down-none">
+                <a class="nav-link" href="#">
+                    <i class="icon-location-pin"></i>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                   aria-expanded="false">
+                    <img class="img-avatar" src="{% static "img/avatars/6.jpg" %}" alt="{{ username }}">
+                    {{ username }}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <div class="dropdown-header text-center">
+                        <strong>Account</strong>
+                    </div>
+                    <div class="dropdown-header text-center">
+                        <strong>设置</strong>
+                    </div>
+                    <a class="dropdown-item" href="#">
+                        <i class="fa fa-user"></i> Profile</a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fa fa-wrench"></i> Settings</a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fa fa-usd"></i> Payments
+                        <span class="badge badge-secondary">42</span>
+                    </a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fa fa-file"></i> Projects
+                        <span class="badge badge-primary">42</span>
+                    </a>
+                    <div class="divider"></div>
+                    <a class="dropdown-item" href="#">
+                        <i class="fa fa-shield"></i> Lock Account</a>
+                    <a class="dropdown-item" href="#" id="Logout">
+                        <i class="fa fa-lock"></i> Logout</a>
+                </div>
+            </li>
+        </ul>
+        <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button"
+                data-toggle="aside-menu-lg-show">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <button class="navbar-toggler aside-menu-toggler d-lg-none" type="button" data-toggle="aside-menu-show">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </header>
+    <div class="app-body">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/main">
+                            <i class="nav-icon icon-speedometer"></i> Dashboard
+                            <span class="badge badge-primary">NEW</span>
+                        </a>
+                    </li>
+                    <li class="nav-title">系统设置</li>
+                    {% if menulist %}
+                        {% for menu in menulist %}
+                            <li class="nav-item nav-dropdown">
+                                <a class="nav-link nav-dropdown-toggle" href="colors.html">
+                                    <i class="nav-icon icon-drop"></i>{{ menu.name }}</a>
+                                <ul class="nav-dropdown-items">
+                                    {% if submenulist %}
+                                        {% for submenu in submenulist %}
+                                            {% if submenu.parent_id == menu.id %}
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="addUser" href="{{ submenu.url }}">
+                                                        <i class="nav-icon icon-puzzle"></i>{{ submenu.name }}</a>
+                                                </li>
+
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="colors.html">
+                            <i class="nav-icon icon-drop"></i>屏体检查</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" id="addUser" href="{% url 'kalaite' %}">
+                                    <i class="nav-icon icon-puzzle"></i>"卡莱特统计"</a>
+                            </li>
+
+                        </ul>
+                    </li>
+
+
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="colors.html">
+                            <i class="nav-icon icon-drop"></i>邮件服务</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/mailsetting.html">
+                                    <i class="nav-icon icon-puzzle"></i>邮箱服务设置</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/mailtemplate.html">
+                                    <i class="nav-icon icon-puzzle"></i>设置告警模板</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-title">应用设置</li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#">
+                            <i class="nav-icon icon-drop"></i>主机管理</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/addhost.html">
+                                    <i class="nav-icon icon-puzzle"></i>添加主机</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/drophost.html">
+                                    <i class="nav-icon icon-puzzle"></i>删除主机</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/assignhost.html">
+                                    <i class="nav-icon icon-puzzle"></i>添加到主机组</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#">
+                            <i class="nav-icon icon-cursor"></i>主机组管理</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/addhost.html">
+                                    <i class="nav-icon icon-puzzle"></i>添加主机组</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/drophost.html">
+                                    <i class="nav-icon icon-puzzle"></i>删除主机组</a>
+                        </ul>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#">
+                            <i class="nav-icon icon-cursor"></i>运维管理</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/password.html">
+                                    <i class="nav-icon icon-puzzle"></i>修改主机密码</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/appdeploy.html">
+                                    <i class="nav-icon icon-puzzle"></i>应用部署</a>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link nav-dropdown-toggle" href="#">
+                            <i class="nav-icon icon-drop"></i>监控报表</a>
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/monitorsource.html">
+                                    <i class="nav-icon icon-puzzle"></i>设置监控源</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="base/export.html">
+                                    <i class="nav-icon icon-puzzle"></i>导出监控报表</a>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+
+        </div>
+
+        <main class="main">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" aria-current="page"><a href="/main">主页</a></li>
+                    {% if not  is_main %}
+                        {#        <li class="breadcrumb-item" aria-current="page"><a href="/main">主页</a></li>#}
+                        <li class="breadcrumb-item" aria-current="page"><a href="#">{{ mainmenu }}</a></li>
+                        <li class="breadcrumb-item" active><a href="{{ location_url }}">{{ submenu }}</a></li>
+                    {% endif %}
+                </ol>
+
+            </nav>
+
+                    {% block customer %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">月费用曲线图</div>
+                                    <div class="card-body">
+                                        <canvas id="billing" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">近30天过期主机</div>
+                                    <div class="card-body">
+                                        <canvas id="pie-ecs30" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">近7天过期主机</div>
+                                    <div class="card-body">
+                                        <canvas id="pie-ecs7" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endblock %}
+
+        </main>
+    </div>
+
+
+    <footer class="app-footer row"><span style="align:center;">Copyright © 2007-2018 <a
+            href="www.novastar.tech">NovaStar</a> Tech Co.,Ltd. All rights reserved</span></footer>
+
+    {% block customer_script %}
+        <script type="text/javascript">
+            var billctx = document.getElementById('billing').getContext('2d');
+            var canbill = new Chart(billctx, {
+                type: 'line',
+                data: {
+                    labels: {% autoescape off %} {{ billingCycle }}{% endautoescape %} ,
+                    {#labels: [1,2,3,4,5,8,9,10],#}
+                    {#labels: {{ billingCycle }},#}
+                    datasets: [{
+                        label: '包年包月费用统计',
+                        data: {{ PayAsYouGoCost }},
+                        {#data: [1,2,3,4,5,8,9,10],#}
+                        options: {
+                            layout: {
+                                padding: {
+                                    left: 0,
+                                    right: 50,
+                                    top: 0,
+                                    bottom: 0
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                labels: {
+                                    fontColor: 'rgb(255, 99, 132)'
+                                }
+                            }
+                        },
+                        fill: false,
+                        pointStyle: 'circle',
+                        backgroundColor: 'rgba(127,255,170, 0.2)',
+                        borderColor: 'rgba(127,255,170, 1)',
+                        pointBackgroundColor: 'rgba(151, 187, 205, 1)',
+                        pointBorderColor: '#fff',
+
+                    }, {
+                        label: '按量费用统计',
+                        data: {{ SubscriptionCost }},
+                        backgroundColor: 'rgba(64,224,208, 0.2)',
+                        borderColor: 'rgba(64,224,208,1)',
+                        pointBorderColor: '#fff',
+                        pointBackgroundColor: 'rgba(151, 187, 205, 1)',
+                        fill: false
+                    }]
+                }
+            });
+            var piectx30 = document.getElementById('pie-ecs30').getContext('2d');
+            var canpie = new Chart(piectx30, {
+                type: 'pie',
+                data: {
+                    labels: {% autoescape off %} {{ billingCycle }}{% endautoescape %} ,
+                    {#labels: [1,2,3,4,5,8,9,10],#}
+                    {#labels: {{ billingCycle }},#}
+                    datasets: [{
+                        label: '包年包月费用统计',
+                        data: {{ PayAsYouGoCost }},
+                        {#data: [1,2,3,4,5,8,9,10],#}
+                        options: {
+                            layout: {
+                                padding: {
+                                    left: 0,
+                                    right: 50,
+                                    top: 0,
+                                    bottom: 0
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                labels: {
+                                    fontColor: 'rgb(255, 99, 132)'
+                                }
+                            }
+                        },
+                        fill: false,
+                        pointStyle: 'circle',
+                        backgroundColor:[
+                            'rgba(127,255,0,1)',
+                            'rgba(34,139,34,1)',
+                            'rgba(173,255,47,1)',
+                            'rgba(218,165,32,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)'
+                        ],
+                        borderColor: 'rgba(127,255,170, 1)',
+                        {#pointBackgroundColor: 'rgba(151, 187, 205, 1)',#}
+                        {#pointBorderColor: '#fff',#}
+
+
+                    }]
+                }
+            });
+            var piectx7 = document.getElementById('pie-ecs7').getContext('2d');
+            var canpie7 = new Chart(piectx7, {
+                type: 'pie',
+                data: {
+                    labels: {% autoescape off %} {{ billingCycle }}{% endautoescape %} ,
+                    {#labels: [1,2,3,4,5,8,9,10],#}
+                    {#labels: {{ billingCycle }},#}
+                    datasets: [{
+                        label: '包年包月费用统计',
+                        data: {{ PayAsYouGoCost }},
+                        {#data: [1,2,3,4,5,8,9,10],#}
+                        options: {
+                            layout: {
+                                padding: {
+                                    left: 0,
+                                    right: 50,
+                                    top: 0,
+                                    bottom: 0
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                labels: {
+                                    fontColor: 'rgb(255, 99, 132)'
+                                }
+                            }
+                        },
+                        fill: false,
+                        pointStyle: 'circle',
+                        backgroundColor:[
+                            'rgba(127,255,0,1)',
+                            'rgba(34,139,34,1)',
+                            'rgba(173,255,47,1)',
+                            'rgba(218,165,32,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)',
+                            'rgba(127,255,0,1)'
+                        ],
+                        borderColor: 'rgba(127,255,170, 1)',
+                        {#pointBackgroundColor: 'rgba(151, 187, 205, 1)',#}
+                        {#pointBorderColor: '#fff',#}
+
+
+                    }]
+                }
+            });
+
+        </script>
+    {% endblock %}
+
+    </body>
+
+{% endblock %}
+
+
+</html>

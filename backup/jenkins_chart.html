@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.0.0
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+{% extends "dist/dashboard.html" %}
+{% load staticfiles %}
+{% block customer %}
+    <div class="container">
+        <div class="card">
+            <div class="card-header">Jenkins 发布
+                <div class="pull-right">
+                    <div class="row" id="aaaaa">
+                        <div class="input-group date offset-sm-3 col-sm-4" data-provide="datepicker">
+                            StartTime:
+                            <input type="text" class="form-control">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                        <div class="input-group date  offset-sm-2 col-sm-3" data-provide="datepicker">
+                            EndTime:
+                            <input type="text" class="form-control">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-wrapper">
+                    <canvas id="canvas-1">aaa</canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extend_script %}
+    <script type="text/javascript" src='{% static "js/bootstrap-datepicker.min.js" %}'></script>
+    <script src='{% static "locales/bootstrap-datepicker.fr-CH.min.js" %}'></script>
+    <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-datepicker.css" %}'/>
+{% endblock %}
+{% block customer_script %}
+    $(function() {
+    $('input[name="dates"]').datepicker({
+    opens: 'left',
+    format: 'yy-mm-dd',
+    locale: 'zh-CN'
+    }, function(start, end, label) {
+    var redirecturl="{% url 'jenkins_chart' %}/?jobname={{ jobname }}
+    &starttime="+start.format('YYYY-MM-DD')+"&endtime="+end.format('YYYY-MM-DD');
+    console.log("redirect url:"+redirecturl);
+    window.location.href=redirecturl;
+    //window.location.href=url+"&starttime="+start.format('YYYY-MM-DD')+"&endtime="+end.format('YYYY-MM-DD');
+    });
+    });
+    var ctx = document.getElementById("canvas-1").getContext('2d');
+    var canvas1 = new Chart(ctx, {
+    type: 'line',
+    data: {
+    labels:{% autoescape off %}{{ buildday }} {% endautoescape %},
+    datasets: [{
+    label:'{{ jobname }} 发布总次数',
+    data: {% autoescape off %}{{ buildCounts }} {% endautoescape %},
+    backgroundColor: [
+    'rgba(255, 99, 132, 0.2)',
+    ],
+    borderColor: [
+    'rgba(255,99,132,1)'
+    ],
+    borderWidth: 1
+    },{
+    label:'{{ jobname }} 发布成功总次数',
+    data: {% autoescape off %}{{ successCounts }} {% endautoescape %},
+    backgroundColor: [
+    'rgba(255, 169, 132, 0.2)',
+    ],
+    borderColor: [
+    'rgba(255,169,132,1)'
+    ],
+    borderWidth: 1
+    },{
+    label:'{{ jobname }} 发布失败总次数',
+    data: {% autoescape off %}{{ failureCounts }} {% endautoescape %},
+    backgroundColor: [
+    'rgba(155, 129, 152, 0.2)',
+    ],
+    borderColor: [
+    'rgba(155,129,152,1)'
+    ],
+    borderWidth: 1
+    },{
+    label:'{{ jobname }} 发布中断总次数',
+    data: {% autoescape off %}{{ abortedCounts }} {% endautoescape %},
+    backgroundColor: [
+    'rgba(185, 169, 152, 0.2)',
+    ],
+    borderColor: [
+    'rgba(185,169,152,1)'
+    ],
+    borderWidth: 1
+    }]
+    },
+
+    options: {
+    scales: {
+    yAxes: [{
+    ticks: {
+    beginAtZero: true
+    }
+    }]
+    }
+    }
+    })
+{% endblock %}
+
+</html>

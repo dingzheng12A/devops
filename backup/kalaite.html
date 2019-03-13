@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.0.0
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+{% extends "dist/dashboard.html" %}
+{% load customer_filter %}
+{% load staticfiles %}
+{% block customer %}
+
+    <div class="row">
+        <div class="col col-md-6">
+            <div class="card-header">
+                <span class="fa fa-battery-1">
+                    公司新闻
+                </span>
+            </div>
+            <div style="height: 600px">
+            {% for content in news_contents %}
+		<div class="card">
+                <div class="card-header">{{ content.createtime|date:"Y年m月d日" }}
+                    <a data-toggle="collapse" href="#collapseOne_{{ content.id }}">
+                        <h4>{{ content.title }}</h4></a></div>
+                <div class="card-body collapse" id="collapseOne_{{ content.id }}">
+                    <h6>{{ content.content|get_first:'。' }}</h6><div class="row"><div><img style="height:200px;weight:300px;" src="/{{ content.img_url|get_first }}" ></div><div class="col-sm-2 pull-right"><button id="detail_{{ content.id }}" class="btn btn-primary ">详情</button></div></div>
+                </div>
+                </div>
+            {% endfor %}
+            </div>
+            <div class="card-footer">
+                <ul class="pagination pull-right">
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'kalaite' %}/?news_page={% if news_page > 1 %}
+                               {{ news_page|add:-1 }}
+                            {% else %}
+                                1
+                            {% endif %}
+                            {% if search %}
+                                &&search={{ search }}
+                            {% endif %}">
+                            上一页
+                         </a>
+                    </li>
+
+                    {% for page in news_page_range %}
+                        <li class="page-item {% if page == news_page %}active{% endif %}">
+                            <a  class="page-link" href="{% url  'kalaite' %}?news_page={{ page }}{% if search %}&&search_username={{ search }}{% endif %}">
+                                {{ page }}
+                             </a>
+                        </li>
+                    {% endfor %}
+
+
+                    <li class="page-item"><a class="page-link" href="{% url 'kalaite' %}?news_page={% if news_page < news_max_page %}{{ news_page|add:1 }}{% else %}1{% endif %}
+                                 {% if search %}
+                                    &&search={{ search }}
+                                 {% endif %}">
+                    下一页</a>
+                    </li>
+
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="col-md-6 card">
+            <div class="card-header">
+                <span class="fa fa-battery-1">
+                    产品专题
+                </span>
+            </div>
+            {% for content in product_contents %}
+                <div class="card-header">{{ content.createtime|date:"Y年m月d日" }}
+                    <a data-toggle="collapse" href="#collapseProduct_{{ content.id }}">
+                        <h5>{{ content.title }}</h5></a></div>
+                <div class="card-body collapse" id="collapseProduct_{{ content.id }}">
+                    <h6>{{ content.content|get_first:'。' }}</h6><div class="row"><div><img style="height:200px;weight:300px;" src="/{{ content.img_url|get_first }}" ></div><div class="col-sm-2 pull-right"><button id="detailProduct_{{ content.id }}" class="btn btn-primary ">详情</button></div></div>
+                </div>
+            {% endfor %}
+            <div style="height: 600px;">
+            </div>
+            <div class="card-footer">
+                <ul class="pagination pull-right">
+                    <li class="page-item">
+			<a class="page-link" href="{% url 'kalaite' %}/?product_page={% if product_page > 1 %}{{ product_page|add:-1 }}
+                        {% else %}
+                                1
+                        {% endif %}
+                        {% if search %}
+                           &&search={{ search }}
+                        {% endif %}">上一页
+                        </a>
+                    </li>
+                    {% for page in product_page_range %}
+                        <li class="page-item  
+				{% if page == product_page %}
+					active
+				{% endif %}">
+				<a class="page-link" href="{% url 'kalaite' %}?product_page={{ page }}
+				{% if search %}
+					&&search_username={{ search }}
+				{% endif %}">
+				{{ page }}
+				</a>
+                        </li>
+                    {% endfor %}
+
+
+                    <li class="page-item"><a class="page-link" href="{% url 'kalaite' %}?product_page={% if product_page < product_max_page %}{{ product_page|add:1 }}
+			{% else %}
+				1
+			{% endif %}
+			{% if search %}
+				&&search={{ search }}
+			{% endif %}">下一页</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+    {% for content in news_contents %}
+    <div class="modal fade pull-right" id="display_web_{{ content.id }}" tabindex="-2" role="dialog"
+         aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="dialog">
+            <div class="modal-content" style="zindex:2;width:750px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="gridSystemModalLabel">{{ content.title }}</h4>
+                    <button type="button" class="close button-default" data-dismiss="modal"
+                            aria-hidden="true"
+                            style="border:1px;algin:left;"></button>
+                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body  close" style="z-index:10;font-size: medium;text-align:center;text-indent: 2em;">
+{#                    {{ content.content }}#}
+                    {% autoescape off %}
+                        {{ content.allcontent }}
+                    {% endautoescape %}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+    {% for content in product_contents %}
+    <div class="modal fade pull-right" id="display_product_{{ content.id }}" tabindex="-2" role="dialog"
+         aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="dialog">
+            <div class="modal-content" style="zindex:2;width:750px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="gridSystemModalLabel">{{ content.title }}</h4>
+                    <button type="button" class="close button-default" data-dismiss="modal"
+                            aria-hidden="true"
+                            style="border:1px;algin:left;"></button>
+                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body  close" style="z-index:10;font-size: medium;text-align:center;text-indent: 2em;">
+{#                    {{ content.content }}#}
+                    {% autoescape off %}
+                        {{ content.allcontent }}
+                    {% endautoescape %}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+
+{% endblock %}
+{% block customer_script %}
+    <script type="text/javascript">
+        {% for content in news_contents %}
+        $("button[id='detail_{{ content.id }}']").click(function(){
+            {#alert("aaa");#}
+            $('#display_web_{{ content.id }}').modal({"show": true, backdrop: 'static', keyboard: false});
+        });
+        {% endfor %}
+        {% for content in  product_contents %}
+        $("button[id='detailProduct_{{ content.id }}']").click(function(){
+            {#alert("aaa");#}
+            $('#display_product_{{ content.id }}').modal({"show": true, backdrop: 'static', keyboard: false});
+        });
+        {% endfor %}
+    </script>
+{% endblock %}
+</html>

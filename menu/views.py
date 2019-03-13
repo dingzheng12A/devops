@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import Group,Permission
 from django.contrib.contenttypes.models import  ContentType
-from Monitor.models import Monitor
+from monitor.models import Monitor
 import json
 
 
@@ -62,7 +62,8 @@ def addmenu(request):
 
 
 
-    return render(request, 'dist/menu.html', dict(displayMenu='block', mainmenu=u'菜单管理', submenu=u'添加菜单',form=form,menulist=menulist,submenulist=submenulist,submenuform=submenuform,editmenuform=editmenuform))
+    # return render(request, 'dist/menu.html', dict(displayMenu='block', mainmenu=u'菜单管理', submenu=u'添加菜单',form=form,menulist=menulist,submenulist=submenulist,submenuform=submenuform,editmenuform=editmenuform))
+    return render(request, 'dist/menu.html', locals())
 
 
 

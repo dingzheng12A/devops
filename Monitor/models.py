@@ -1,21 +1,43 @@
 from django.db import models
 from django.core.validators import MinValueValidator,MaxValueValidator
+from ckeditor.fields import  RichTextField, RichTextFormField
 # Create your models here.
+
+
+
+
+
+class Post(models.Model):
+	content = RichTextField()
+
+class Blog(models.Model):
+	title = models.CharField(max_length=200, unique=True)
+	body = RichTextField()
+	body1 = RichTextFormField()
+
+
+	def __str__(self):
+		return self.title
+
+
 class Monitor(models.Model):
-	id=models.AutoField(primary_key=True)
-	memory_used=models.FloatField(verbose_name="内存MB",default=0)
-	memory_spare=models.FloatField(verbose_name="剩余内存MB",default=0)
-	cpu_load_5m=models.FloatField(verbose_name="统计当前平均5分钟负载",default=0)
-	cpu_load_10m=models.FloatField(verbose_name="统计当前平均10分钟负载",default=0)
-	cpu_load_15m=models.FloatField(verbose_name="统计当前平均15分钟负载",default=0)
-	disk_used=models.FloatField(verbose_name="统计磁盘使用情况",default=0)
-	disk_spare=models.FloatField(verbose_name="剩余硬盘MB",default=0)
-	createtime = models.DateTimeField(verbose_name="生成时间", auto_now=True)
+	choices = (
+		("", "------"),
+		("title1", "标题1"),
+		("title2", "标题2"),
+		("title3", "标题3")
+	)
+	id = models.AutoField(primary_key=True)
+	memory_used = models.FloatField(verbose_name="内存MB", default=0)
+	cpu_used = models.FloatField(verbose_name="统计当前cpu使用率", default=0)
+	disk_used = models.FloatField(verbose_name="统计磁盘使用情况", default=0)
+	createTime = models.DateTimeField(verbose_name="生成时间", auto_now=True)
+	host = models.ManyToManyField(Blog, verbose_name="标题", blank=True)
+	lists = models.CharField(choices=choices, max_length=50,default="------")
 
 	class Meta:
-		db_table='resource_monitor'
-		permissions=(
-			("open_monitor","can open monitor to query"),
-			("reply_monitor","can reply monitor"),
-			("close_monitor","close monitor"),
-		)
+		db_table = 'resource_monitor'
+		verbose_name = "系统资源监控"
+
+
+

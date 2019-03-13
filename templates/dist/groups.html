@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.0.0
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+{% extends "dist/dashboard.html" %}
+{% load staticfiles %}
+{% block customer %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header text-info">
+                <div class="row">
+                    <div class="h4 col-md-4">角色管理</div>
+                    <div class="offset-md-6">
+                        <button class="btn btn-primary" onclick="open_add_group_modal()"><span
+                                data-toggle="tooltip" title="添加角色">添加角色</span></button>
+                        &nbsp;&nbsp;<button data-toggle="tooltip" title="删除角色" id="batch_delete_group"
+                                            class="btn btn-danger" disabled>批量删除
+                    </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-body">
+                    <div class="card">
+                        <table class="table table-bordered" id="group_list">
+                            <div class="card-title">
+                                <thead class="table-info">
+                                <tr>
+                                    <th></th>
+                                    <th scope="col" class="text-center">角色名</th>
+                                    <th scope="col" class="text-center">描述信息</th>
+                                    <th scope="col" class="text-center">关联用户</th>
+                                    <th scope="col" class="text-center">角色授权</th>
+                                </tr>
+                                </thead>
+                            </div>
+                            <div class="card-body">
+                                {% for group in current_group_list %}
+                                    <tr>
+                                        <td scope="col" class="text-center"><input type="checkbox" id="group_id"
+                                                                                   class="checkbox"
+                                                                                   value="{{ group.group_id }}"/></td>
+                                        <td scope="col" class="text-center text-success h5">{{ group.group.name }}</td>
+                                        <td scope="col" class="text-center font-italic">{{ group.description }}</td>
+                                        <td scope="col" class="text-center">
+                                            {#                                            <select multiple="multiple" size="10" class="select2 select2-container col-md-4 " style="height:75px;" data-actions-box="true" name="duallistbox_demo1[]">#}
+                                            {#                                                <option>1</option>#}
+                                            {#                                                <option>1</option>#}
+                                            {#                                                <option>1</option>#}
+                                            {#                                            </select>#}
+                                            <button class="btn-info" onclick="open_assign_modal({{ group.group_id }})">
+                                                <span class="text-white" data-toggle="tooltip" title="关联用户">关联用户</span>
+                                            </button>
+                                        </td>
+                                        <td scope="col" class="text-center">
+                                            <button class="btn-info" data-toggle="modal"
+                                                    data-target="assign_permission">
+                                                <span class="text-white" data-toggle="tooltip" title="关联用户">关联权限</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </div>
+                        </table>
+                        <div class="card-footer">
+                            <div class="row pull-right  col-md-3">
+                                <label class="label" for="pagesize">每页显示:</label>
+                                <select id="pagesize" class="form-control col-md-3">
+                                    <option value="5" {% if page_size == 5 %}selected{% endif %}>5</option>
+                                    <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
+                                    <option value="15" {% if page_size == 15 %}selected{% endif %}>15</option>
+                                </select>行
+                                <nav aria-label="" class="pull-right">
+                                    <ul class="pagination">
+                                        {% if current_page > 1 %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="{% url 'group_manager' %}?page={{ current_page|add:-1 }}">前一页</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">前一页</span>
+                                            </li>
+                                        {% endif %}
+                                        {% for page in page_list %}
+                                            <li class="page-item {% if page == current_page %}active{% endif %}"><a
+                                                    class="page-link"
+                                                    href="{% url 'group_manager' %}?page={{ page }}">{{ page }}</a></li>
+                                        {% endfor %}
+
+                                        {% if current_page < pages %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="{% url 'group_manager' %}?page={{ current_page|add:1 }}">下一页</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">下一页</span>
+                                            </li>
+                                        {% endif %}
+
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="card-footer">分页</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fade modal" id="add_group" tabindex="-2" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form class="form" id="add_group" action="">
+                <div class="modal-content">
+                    <div class="modal-header h4 text-info">添加角色<span class="close pull-right" data-dismiss="modal"
+                                                                     aria-hidden="True">&times;</span></div>
+                    <div class="modal-body">
+                        {% for item in group_form %}
+                            {{ item.label_tag }}
+                            {{ item }}
+                            {{ item.errors }}
+                        {% endfor %}
+                        <span class="btn-ghost-info text-lg-center text-danger bg-facebook " id="error_msg"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" onclick="add_group()">添加</button>
+                        <button class="btn btn-primary" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="fade modal" id="del_confirm">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title h4  text-info">删除角色</div>
+                    <button class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body h5">是否要删除角色吗?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" onclick="">确定</button>
+                    <button class="btn btn-primary" type="button" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fade modal" id="assign" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="width:600px;">
+                <div class="modal-header">
+                    <div class="modal-title h4  text-info">关联用户和角色</div>
+                    <button class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body row">
+                    <div class="card col-md-5">
+                        <div class="card-header">
+                            <div class="card-title h5 text-md-center">当前用户</div>
+                        </div>
+                        <div class="card-body">
+                            <select class="select2-container--open form-control" multiple id="contained_users">
+{#                                <option class="form-control">张三</option>#}
+{#                                <option class="form-control">张三</option>#}
+{#                                <option class="form-control">张三</option>#}
+{#                                <option class="form-control">张三</option>#}
+{#                                <option class="form-control">张三</option>#}
+                            </select>
+                        </div>
+                        <div class="card-footer"></div>
+                    </div>
+                    <div class="col-md-2 row">
+                        <button class="btn btn-ghost-info col-md-6"><span class="text-md-center" onclick="remove_to();">-></span></button>
+                        <button class="btn btn-ghost-info col-md-6"  id="id_assign_to" onclick="assign_to();"><span class="text-md-center"><-</span></button>
+                    </div>
+                    <div class="card col-md-5">
+                        <div class="card-header">
+                            <div class="card-title h5 text-md-center">其他用户</div>
+                        </div>
+                        <div class="card-body">
+                            <select class="select2-container--classic form-control" multiple id="other_users"  data-live-search="true">
+                                {% for user in user_list %}
+                                    <option class="form-control" value="{{ user.id }}">{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="card-footer"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" onclick="commit_modify();">确定</button>
+                    <button class="btn btn-primary" type="button" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block customer_script %}
+    $("select[id='pagesize']").on("change",function(){
+    var csrftoken = $.cookie('csrftoken');
+    $.ajax({
+    url: "{% url 'group_manager' %}",
+    type: "post",
+    headers: {'X-CSRFToken': csrftoken},
+    data: {"pagesize":$(this).val()},
+    success:function(data){
+    location.href = "{% url 'group_manager' %}";
+    },
+    })
+    });
+    function open_add_group_modal(){
+    $("#add_group").modal({"backdrop": "static", "keyboard": false});
+    }
+    function add_group(){
+    var csrf_token = $.cookie('csrftoken');
+    $.ajax({
+    url:"{% url 'check_group' %}",
+    type:"post",
+    headers: {'X-CSRFToken': csrf_token},
+    data:$("form[id='add_group']").serialize(),
+    success:function(data){
+    if(data.result == 0){
+    $("form[id='add_group'] #error_msg").text(data.message);
+    }else{
+    $.ajax({
+    url: "{% url 'group_manager' %}",
+    type: "post",
+    headers: {'X-CSRFToken': csrf_token},
+    data:$("form[id='add_group']").serialize(),
+    success:function(){
+    location.href="{% url 'group_manager' %}"
+    }
+    })
+    }
+    }
+    })
+    }
+    var num = 0;
+    var group_array = [];
+    $("table[id='group_list']").on("click", "tr #group_id", function () {
+    if ($(this).is(":checked")) {
+    num += 1;
+    group_array[num] = $(this).val();
+    console.log('点击次数:' + num + "group_array:" + group_array.join(" "));
+    } else {
+    group_array.pop($(this).val());
+    num -= 1;
+    }
+    if (num > 0) {
+    $("#batch_delete_group").prop('disabled', false);
+    } else {
+    $("#batch_delete_group").prop('disabled', true);
+    }
+    })
+    $("#batch_delete_group").on("click",function(){
+    $("#del_confirm").modal({"backdrop": "static", "keyboard": false});
+    })
+    function open_assign_modal(group_id){
+        html = "<input type='hidden' id='id_group_id' value='"+group_id+"'>";
+        console.log("html:"+html);
+        var csrf_token = $.cookie('csrftoken');
+        $.ajax({
+            url: "{% url 'query_users' %}",
+            type: "post",
+            data: {"group_id":group_id},
+            dataType: "json",
+            headers: {'X-CSRFToken': csrf_token},
+            success:function(data){
+                if(data.result==1){
+                    html= "";
+                    $.each(data.user_list,function(index,item){
+                        html += "<option class='form-control' value='"+item.id+"'>"+item.username+"</option>";
+                    })
+                    $("#contained_users").append(html);
+                }
+            }
+        })
+        $("#assign").append(html);
+        $("#assign").modal({"backdrop":"static","keyboard":false})
+    }
+    function remove_to(){
+       $("select[id='contained_users'] option").each(function(){
+            if($(this).is(":checked")){
+                select_text = $(this).text();
+                select_value = $(this).val();
+                $(this).remove();
+                $("select[id='other_users']").append("<option class='form-control' value='"+select_value+"'>"+select_text+"</option>");
+            }
+        })
+    }
+
+    function assign_to(){
+        var csrf_token  = $.cookie("csrftoken");
+        $("select[id='other_users'] option").each(function(){
+            if($(this).is(":checked")){
+                select_text = $(this).text();
+                select_value = $(this).val();
+                $(this).remove();
+                $("select[id='contained_users']").append("<option class='form-control' value='"+select_value+"'>"+select_text+"</option>");
+            }
+        })
+    }
+    function commit_modify(){
+        var csrftoken = $.cookie("csrftoken");
+        var group_id = $("#id_group_id").val();
+        var  contained_users = new Array();
+        var other_users = new Array();
+        $("select[id='contained_users'] option").each(function(){
+            contained_users.push($(this).text());
+        });
+         $("select[id='other_users'] option").each(function(){
+            other_users.push($(this).text());
+        });
+        $.ajax({
+            url: "{% url 'assigin_user_to_role' %}",
+            type: "post",
+            data: {"user_list":contained_users.toString(),"group_id":group_id},
+            dataType: "json",
+            headers: {'X-CSRFToken': csrftoken},
+            success:function(data){
+                if(data.result==1){
+                    location.href = "{% url 'group_manager' %}"
+                }
+            }
+        })
+    }
+{% endblock %}
+</html>

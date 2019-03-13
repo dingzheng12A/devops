@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.0.0
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+{% extends "dist/dashboard.html" %}
+{% load staticfiles %}
+{% block title %}
+  <title>运维管理平台</title>
+  <style>
+    .tags-wrap {
+      border: 1px solid #ccc;
+      min-height: 24px;
+    }
+
+    .tags-wrap .tag {
+      display: inline-block;
+      line-height: 18px;
+      padding: 2px 20px 2px 5px;
+      background-color: #00aced;
+      color: #fff;
+      font-size: 12px;
+      margin: 3px;
+      position: relative;
+    }
+
+    .tags-wrap .tag .tag-remove {
+      position: absolute;
+      width: 10px;
+      right: 0px;
+      top: 0px;
+    }
+  </style>
+{% endblock %}
+</html>

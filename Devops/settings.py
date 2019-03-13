@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -27,16 +26,21 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    'jenkins',
+    'Account',
     'aliyun',
     'menu',
     'Role',
     'host',
-    'Monitor',
+    'monitor',
+    'main',
     'privilege',
+    'ckeditor',
+    'djcelery',
+    'ckeditor_uploader',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    #'breadcrumbs.middleware.BreadcrumbsMiddleware',
+    # 'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -58,11 +62,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Devops.urls'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(os.path.dirname(os.path.dirname(__file__)),'templates')],
+        'DIRS': [os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,12 +74,15 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'customer_filter': 'kalaite.templatetags.customer_filter',
+
+            }
         },
     },
 ]
 
 WSGI_APPLICATION = 'Devops.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -91,14 +97,13 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Devops',
-        'HOST': 'localhost',
+        'NAME': 'demo',
+        'HOST': '172.16.9.119',
         'PORT': '3306',
         'USER': 'devops',
         'PASSWORD': 'devops'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -118,40 +123,182 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
+# LANGUAGE_CODE = 'zh-Hans'
 LANGUAGE_CODE = 'zh-Hans'
 
-#TIME_ZONE = 'UTC'
 TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
-
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-#STATIC_URL = '/static/'
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "templates/dist"),
-    # os.path.join(BASE_DIR, "templates/dist/css"),
-    # os.path.join(BASE_DIR, "templates/dist/img"),
-    # os.path.join(BASE_DIR, "templates/dist/js"),
-    # os.path.join(BASE_DIR, "templates/dist/js"),
-    # os.path.join(BASE_DIR, "templates/dist/vendors"),
 )
-STATIC_ROOT = os.path.join(BASE_DIR,"templates/")
+UPLOAD_ROOT = os.path.join(BASE_DIR, "templates/dist/img")
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 LOGIN_URL = '/login/'
-#SESSION_COOKIE_AGE=60*30	#设置cookie 失效时间为30分钟
+# SESSION_COOKIE_AGE=60*30	#设置cookie 失效时间为30分钟
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_ENGINE = "django.contrib.sessions.backends.file"
-#SESSION_FILE_PATH = "/var/lib/session"
+# SESSION_FILE_PATH = "/var/lib/session"
 SESSION_COOKIE_AGE = 7200
+
+# CKEDITOR_BASEPATH = os.path.join(STATIC_ROOT, "dist", "ckeditor/ckeditor/")
+CKEDITOR_UPLOAD_PATH = "uploads/"
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(STATIC_ROOT , "media")
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter',
+             'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['RemoveFormat', 'Source'],
+
+        ]
+    }
+}
+
+BASE_LOG_DIR = os.path.join(BASE_DIR, "log")
+LOGGING = {
+    'version': 1,
+    # 禁用已经存在的logger 实例
+    'disable_existing_loggers': False,
+    # 定义日志文件的格式
+    'formatters': {
+        # 详细的日志格式
+        'standard': {
+            'format': '[%(asctime)s][%(threadName)s:%(thread)d][task_id:%(name)s][%(filename)s:%(lineno)d]'
+                      '[%(levelname)s][%(message)s]'
+        },
+        # 简单的日志格式
+        'simple': {
+            'format': '[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d]%(message)s'
+        },
+        # 定义一个特殊的日志格式
+        'collect': {
+            'format': '%(message)s'
+        }
+    },
+    # 定义过滤器
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    # 定义处理器
+    'handlers': {
+        # 在终端打印日志
+        'console': {
+            'level': 'DEBUG',
+            # 只有在Django debug 设置为True 时，才在屏幕上打印日志
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        # 默认日志
+        'default': {
+            'level': 'INFO',
+            # 保存日志到文件并自动进行切割
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_LOG_DIR, 'django_info.log'),
+            # 日志大小 50m
+            'maxBytes': 1024 * 1024 * 50,
+            # 最多备份3份
+            'backupCount': 3,
+            'formatter': 'standard',
+            'encoding': 'utf-8',
+        },
+        # 用来记录错误日志
+        'error': {
+            'level': 'ERROR',
+            # 保存日志到文件并自动进行切割
+            'class': 'logging.handlers.RotatingFileHandler',
+            # 日志文件
+            'filename': os.path.join(BASE_LOG_DIR, "django_err.log"),
+            # 日志大小50m
+            'maxBytes': 1024 * 1024 * 50,
+            'backupCount': 5,
+            'formatter': 'standard',
+            'encoding': 'utf-8',
+        },
+        # 定义一个收集特定信息的日志
+        'collect': {
+            'level': 'INFO',
+            # 保存日志到文件，自动切割
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_LOG_DIR, "django_collect.log"),
+            # 日志大小50m
+            'maxBytes': 1024 * 1024 * 50,
+            'backupCount': 5,
+            'formatter': 'collect',
+            'encoding': 'utf-8'
+        }
+    },
+    'loggers': {
+        # 默认的logger应用配置
+        '': {
+            # 上线之后，可以把console 移除
+            'handlers': ['default', 'console', 'error'],
+            'level': 'DEBUG',
+            # 是否想更高级别的logger 传递
+            'propagate': True,
+        },
+        # 名称为'collect'的logger 单独处理
+        'collect': {
+            'handlers': ['console', 'collect'],
+            'level': 'INFO',
+        }
+    },
+}
+
+import djcelery
+
+djcelery.setup_loader()
+BROKER_URL = 'amqp://admin:admin@172.16.9.119:5672//'
+CELERY_RESULT_BACKEND = 'amqp://admin:admin@172.16.9.119:5672//'
+CELERY_TIMEZONE = TIME_ZONE
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+# 下面是定时任务的设置，我一共配置了三个定时任务.
+from celery.schedules import crontab
+
+CELERYBEAT_SCHEDULE = {
+    u'每分钟执行一次': {
+        "tasks": "main.tasks.add",
+        "schedule": crontab(minute='*/1'),
+        "args": (1, 1),
+    },
+    # #定时任务一：　每24小时周期执行任务(del_redis_data)
+    # u'删除过期的redis数据': {
+    #     "task": "app.tasks.del_redis_data",
+    #     "schedule": crontab(hour='*/24'),
+    #     "args": (),
+    # },
+    # #定时任务二:　每天的凌晨12:30分，执行任务(back_up1)
+    # u'生成日报表': {
+    #     'task': 'app.tasks.back_up1',
+    #     'schedule': crontab(minute=30, hour=0),
+    #     "args": ()
+    # },
+    # #定时任务三:每个月的１号的6:00启动，执行任务(back_up2)
+    # u'生成统计报表': {
+    #         'task': 'app.tasks.back_up2',
+    #         'schedule': crontab(hour=6, minute=0,   day_of_month='1'),
+    #         "args": ()
+    # },
+}
